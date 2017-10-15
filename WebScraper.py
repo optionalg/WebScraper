@@ -12,6 +12,12 @@ class WebScraper(object):
         row_data = self.website.parse_attributes(page)
         self.save('index.csv', row_data)
 
+    def fetch_pages(self, page_url_list):
+        page_list = []
+        for page_url in page_url_list:
+            page_list.append(self.fetch_page(page_url))
+        return page_list
+
     def fetch_page(self, page_url):
         return urllib.request.urlopen(page_url)
 

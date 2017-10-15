@@ -1,26 +1,24 @@
 import csv
-from datetime import datetime
 import urllib.request
-from bs4 import BeautifulSoup
+
+from Website.Bloomberg.Bloomberg import Bloomberg
 
 class WebScraper(object):
 
-    def quote_page(self, page_url):
+    def __init__(self):
+        self.website = Bloomberg()
+        page = self.fetch_page(self.website.url)
 
-        page = urllib.request.urlopen(page_url)
-        soup = BeautifulSoup(page, 'html.parser')
-        name_box = soup.find('h1', attrs={'class': 'name'})
+        row_data = self.website.parse_attributes(page)
+        self.save('index.csv', row_data)
 
-        name = name_box.text.strip()
-        print('Name: %s' % name)
+    def fetch_page(self, page_url):
+        return urllib.request.urlopen(page_url)
 
-        price_box = soup.find('div', attrs={'class':'price'})
-        price = price_box.text
-        print('Price: %s' % price)
+    def save(self, filename, row_data):
+        self.save_as_csv(filename, row_data)
 
-        with open('index.csv', 'a') as csv_file:
+    def save_as_csv(self, filename, row_data):
+        with open(filename, 'a') as csv_file:
             writer = csv.writer(csv_file)
-            writer.writerow([name, price, datetime.now()])
-
-    def save_as_csv(self, filename):
-         pass
+            writer.writerow(row_data)
